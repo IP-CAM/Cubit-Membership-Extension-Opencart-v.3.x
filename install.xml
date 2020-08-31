@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Cubit Membership</name>
+    <code>cubit</code>
+    <version>1.0.0</version>
+    <author>Justinas B.</author>
+    <file path="catalog/view/theme/*/template/extension/module/account.twig">
+    <operation>
+    <search><![CDATA[<a href="{{ transaction }}" class="list-group-item">{{ text_transaction }}</a>]]></search>
+    <add position="after">
+    <![CDATA[<a href="index.php?route=extension/module/cubit/account" class="list-group-item">Membership</a>]]>
+    </add>
+    </operation>
+    </file>
+    <file path="catalog/view/theme/*/template/account/account.twig">
+    <operation>
+    <search><![CDATA[<li><a href="{{ wishlist }}">{{ text_wishlist }}</a></li>]]></search>
+    <add position="after">
+    <![CDATA[<li><a href="index.php?route=extension/module/cubit/account">Membership</a></li>]]>
+    </add>
+    </operation>
+    </file>
+</modification>
+

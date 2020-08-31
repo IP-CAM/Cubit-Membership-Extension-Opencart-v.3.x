@@ -1,0 +1,104 @@
+								<div class="offer panel-default panel" data-cubit-offer-id="{{ offer.cubit_offer_id }}">
+									<div class="panel-heading">{{ text_offer }}
+										#{{ offer.cubit_offer_id }}</div>
+									<div class="panel-body">
+										{% for language in languages %}
+											<div class="form-group required {% if offer_error[offer.cubit_offer_id]['name'][language.language_id] %}has-error{% endif %}">
+												<label class="col-sm-2 control-label" for="input-offer-name-{{ language.language_id }}-{{ offer.cubit_offer_id }}">{{ entry_name }}
+													({{ language.name }})</label>
+												<div class="col-sm-10">
+													<input type="text" name="module_cubit_offer[{{offer.cubit_offer_id}}][name][{{ language.language_id }}]" value="{{ offer.name[language.language_id] }}" class="form-control" placeholder="{{ entry_name }}" id="input-offer-name-{{ language.language_id }}-{{ offer.cubit_offer_id }}"/>
+													{% if offer_error[offer.cubit_offer_id]['name'][language.language_id] %}
+														<p class="text-danger">
+															<small>{{ offer_error[offer.cubit_offer_id]['name'][language.language_id]  }}</small>
+														</p>
+													{% endif %}
+												</div>
+											</div>
+										{% endfor %}
+										<div class="form-group required  {% if offer_error[offer.cubit_offer_id]['amount'] %}has-error{% endif %}">
+											<label class="col-sm-2 control-label" for="input-offer-amount-{{ offer.cubit_offer_id }}">{{ entry_amount }}</label>
+											<div class="col-sm-10">
+												<input type="text" name="module_cubit_offer[{{ offer.cubit_offer_id }}][amount]" value="{{ offer.amount }}" class="form-control" placeholder="2.99" id="input-offer-amount-{{ offer.cubit_offer_id }}"/>
+												{% if offer_error[offer.cubit_offer_id]['amount'] %}
+													<p class="text-danger">
+														<small>{{ offer_error[offer.cubit_offer_id]['amount'] }}</small>
+													</p>
+												{% endif %}
+											</div>
+										</div>
+										<div class="form-group required  {% if offer_error[offer.cubit_offer_id]['frequency_days'] %}has-error{% endif %}">
+											<label class="col-sm-2 control-label" for="input-offer-frequency-days-{{ offer.cubit_offer_id }}">{{ entry_frequency_days }}</label>
+											<div class="col-sm-10">
+												<input type="text" name="module_cubit_offer[{{ offer.cubit_offer_id }}][frequency_days]" value="{{ offer.frequency_days }}" class="form-control" placeholder="7" id="input-offer-frequency-days-{{ offer.cubit_offer_id }}"/>
+												{% if offer_error[offer.cubit_offer_id]['frequency_days'] %}
+													<p class="text-danger">
+														<small>{{ offer_error[offer.cubit_offer_id]['frequency_days'] }}</small>
+													</p>
+												{% endif %}
+											</div>
+										</div>
+										<div class="form-group requiredd">
+											<label class="col-sm-2 control-label" for="input-offer-active-customer-group-id-{{ offer.cubit_offer_id }}">{{ entry_active_customer_group_id }}</label>
+											<div class="col-sm-10">
+												<select name="module_cubit_offer[{{ offer.cubit_offer_id }}][active_customer_group_id]" class="form-control" id="active-customer-group-id-{{ offer.cubit_offer_id }}" >
+												{% for customer_group in customer_groups %}
+													{% if customer_group.customer_group_id == offer.active_customer_group_id %}
+														<option value="{{ customer_group.customer_group_id }}" selected>{{ customer_group.name }}</option>
+													{% else %}
+														<option value="{{ customer_group.customer_group_id }}">{{ customer_group.name }}</option>
+													{% endif %}
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="form-group required {% if offer_error[offer.cubit_offer_id]['expire_customer_group_id'] %}has-error{% endif %}">
+										<label class="col-sm-2 control-label" for="input-offer-frequency-days-{{ offer.cubit_offer_id }}">
+											<span data-toggle="tooltip" title="{{ help_expire_customer_group_id }}">{{ entry_expire_customer_group_id }}</span>
+										</label>
+										<div class="col-sm-10">
+											<select name="module_cubit_offer[{{ offer.cubit_offer_id }}][expire_customer_group_id]" class="form-control" id="expire-customer-group-id-{{ offer.cubit_offer_id }}">
+											{% for customer_group in customer_groups %}
+												{% if customer_group.customer_group_id == offer.expire_customer_group_id %}
+													<option value="{{ customer_group.customer_group_id }}" selected>{{ customer_group.name }}</option>
+												{% else %}
+													<option value="{{ customer_group.customer_group_id }}">{{ customer_group.name }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
+										{% if offer_error[offer.cubit_offer_id]['expire_customer_group_id'] %}
+											<p class="text-danger">{{ offer_error[offer.cubit_offer_id]['expire_customer_group_id'] }}</p>
+										{% endif %}
+									</div>
+								</div>
+								<div class="form-group {% if offer_error[offer.cubit_offer_id]['sort_order'] %}has-error{% endif %}">
+									<label class="col-sm-2 control-label" for="input-offer-sort-order-{{offer.cubit_offer_id}}">{{ entry_sort_order }}</label>
+									<div class="col-sm-10">
+										<input type="text" name="module_cubit_offer[{{offer.cubit_offer_id}}][sort_order]" value="{{ offer.sort_order }}" class="form-control" placeholder="0" id="input-offer-sort-order-{{ offer.cubit_offer_id }}"/>
+										{% if offer_error[offer.cubit_offer_id]['sort_order'] %}
+											<p class="text-danger">
+												<small>{{offer_error[offer.cubit_offer_id]['sort_order']}}</small>
+											</p>
+										{% endif %}
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-offer-status-{{ offer.cubit_offer_id }}">
+										{{ entry_status }}
+									</label>
+									<div class="col-sm-10">
+										<select name="module_cubit_offer[{{offer.cubit_offer_id}}][status]" class="form-control" id="input-offer-status-{{ offer.cubit_offer_id }}">
+											<option value="1" {% if offer.status %} selected="selected" {% endif %}>{{ text_enabled }}</option>
+											<option value="0" {% if not offer.status %} selected="selected" {% endif %}>{{ text_disabled }}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-10 col-sm-push-2">
+										<button class="btn btn-danger btn-xs delete-offer">{{ text_delete }}</button>
+									</div>
+								</div>
+								<input type="hidden" name="module_cubit_offer[{{offer.cubit_offer_id}}][cubit_offer_id]" value="{{ offer.cubit_offer_id }}"/>
+								<hr>
+							</div>
+						</div>

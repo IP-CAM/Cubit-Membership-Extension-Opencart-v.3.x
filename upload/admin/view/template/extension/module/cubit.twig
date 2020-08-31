@@ -1,0 +1,388 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<button type="submit" form="form-payment" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+					<i class="fa fa-save"></i>
+				</button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+					<i class="fa fa-reply"></i>
+				</a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li>
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+		{% if error_warning %}
+			<div class="alert alert-danger alert-dismissible">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+
+		<div class="alert alert-warning alert-dismissible">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ text_https_warning }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-pencil"></i>
+					{{ text_edit }}</h3>
+			</div>
+			<div class="panel-body">
+				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
+					<ul class="nav nav-tabs">
+						<li class="active" id="li-tab-settings">
+							<a href="#tab-settings" data-toggle="tab">{{ tab_settings }}</a>
+						</li>
+						<li class="" id="li-tab-terms">
+							<a href="#tab-terms" data-toggle="tab">{{ tab_terms }}</a>
+						</li>
+						<li class="" id="li-tab-offers">
+							<a href="#tab-offers" data-toggle="tab">{{ tab_offers }}</a>
+						</li>
+						{% if status %}
+							<li onclick="navigateListing()">
+								<a href="index.php?route=extension/module/cubit/listing&user_token={{ user_token }}" data-toggle="tab">{{ tab_memberships }}</a>
+							</li>
+						{% endif %}
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab-settings">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input-cron-url">
+									{{ entry_cron_url }}</label>
+								<div class="col-sm-10">
+									<div class="input-group">
+										<span class="input-group-addon">
+											<i class="fa fa-link"></i>
+										</span>
+										<input type="text" readonly="" value="{{ cron_url }}" id="input-cron-url" class="form-control">
+									</div>
+									<p class="text-muted">{{ help_cron }}</p>
+								</div>
+							</div>
+							<div class="form-group required {% if paypal_client_id_error %}has-error{% endif %}">
+								<label for="input-paypal-client-id" class="control-label col-sm-2">{{ entry_paypal_client_id }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="module_cubit_paypal_client_id" value="{{ paypal_client_id }}" placeholder="{{ entry_paypal_client_id }}" class="form-control" id="input-paypal-client-id"/>
+									{% if paypal_client_id_error %}
+										<p class="text-danger">
+											{{ paypal_client_id_error }}
+										</p>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group required {% if paypal_secret_error %}has-error{% endif %}">
+								<label for="input-paypal-secret" class="control-label col-sm-2">{{ entry_paypal_secret }}</label>
+								<div class="col-sm-10">
+									<input type="text" name="module_cubit_paypal_secret" value="{{ paypal_secret }}" placeholder="{{ entry_paypal_secret }}" class="form-control" id="input-paypal-secret"/>
+									{% if paypal_secret_error %}
+										<p class="text-danger">
+											{{ paypal_secret_error }}
+										</p>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="input-paypal-sandbox">{{ entry_sandbox }}
+								</label>
+								<div class="col-sm-10">
+									{% if paypal_sandbox %}
+										<input type="checkbox" name="module_cubit_paypal_sandbox" value="1" checked="checked" class="form-control" id="input-paypal-sandbox"/>
+									{% else %}
+										<input type="checkbox" name="module_cubit_paypal_sandbox" value="1" class="form-control" id="input-paypal-sandbox"/>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group webhook sandbox-webhook" {% if not paypal_sandbox %} style="display:none" {% endif %}>
+								<label class="col-sm-2 control-label" for="input-total">
+									{{ entry_webhook }}
+								</label>
+								<div class="col-sm-10">
+									{% if paypal_sandbox_webhook_id %}
+										<span class="label label-success">{{ paypal_sandbox_webhook_id }}</span>
+									{% else %}
+										<span class="label label-danger">{{ text_not_set }}</span>
+									{% endif %}
+									<button class="btn btn-xs regenerate-webhook" data-webhook-reference="{{ paypal_sandbox_webhook_id }}" title="{{ text_regenerate_webhook }}" type="button">
+										<i class="fa fa-refresh"></i>
+									</button>
+									<p>
+										<em>{{ help_webhook }}</em>
+									</p>
+								</div>
+								<input type="hidden" name="module_cubit_paypal_sandbox_webhook_id" value="{{ paypal_sandbox_webhook_id }}"/>
+							</div>
+							<div class="form-group webhook live-webhook" {% if paypal_sandbox %} style="display:none" {% endif %}>
+								<label class="col-sm-2 control-label" for="input-total">
+									{{ entry_webhook }}
+								</label>
+								<div class="col-sm-10">
+									{% if paypal_webhook_id %}
+										<span class="label label-success">{{ paypal_webhook_id }}</span>
+									{% else %}
+										<span class="label label-danger">{{ text_not_set }}</span>
+									{% endif %}
+									<button class="btn btn-xs regenerate-webhook" data-webhook-reference="{{ paypal_webhook_id }}" title="{{ text_regenerate_webhook }}" type="button">
+										<i class="fa fa-refresh"></i>
+									</button>
+									<p>
+										<em>{{ help_webhook }}</em>
+									</p>
+								</div>
+								<input type="hidden" name="module_cubit_paypal_webhook_id" value="{{ paypal_webhook_id }}"/>
+							</div>
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="input-notify-expire">{{ entry_notify_expire }}
+								</label>
+								<div class="col-sm-10">
+									{% if notify_expire %}
+										<input type="checkbox" name="module_cubit_notify_expire" value="1" checked="checked" class="form-control" id="input-notify-expire"/>
+									{% else %}
+										<input type="checkbox" name="module_cubit_notify_expire" value="1" class="form-control" id="input-notify-expire"/>
+									{% endif %}
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="input-currency-convert">
+									<span data-toggle="tooltip" title="{{ help_currency_convert }}">{{ entry_currency_convert }}</span>
+								</label>
+								<div class="col-sm-10">
+									{% if currency_convert %}
+										<input type="checkbox" name="module_cubit_currency_convert" value="1" checked="checked" class="form-control" id="input-currency-convert"/></span>
+								{% else %}
+									<input type="checkbox" name="module_cubit_currency_convert" value="1" class="form-control" id="input-currency-convert"/>
+								{% endif %}
+							</div>
+						</div>
+						<div class="form-group required {% if payment_failure_threshold_error %}has-error{% endif %}">
+							<label for="input-paypal-payment-failure-threshold" class="control-label col-sm-2">
+								<span data-toggle="tooltip" title="{{ help_payment_failure_threshold }}">{{ entry_payment_failure_threshold }}</span>
+							</label>
+							<div class="col-sm-10">
+								<input type="text" name="module_cubit_payment_failure_threshold" value="{{ payment_failure_threshold }}" placeholder="{{ entry_payment_failure_threshold }}" class="form-control" id="input-paypal-payment-failure-threshold"/>
+								{% if payment_failure_threshold_error %}
+									<p class="text-danger">
+										{{ payment_failure_threshold_error }}
+									</p>
+								{% endif %}
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+							<div class="col-sm-10">
+								<select name="module_cubit_status" id="input-status" class="form-control">
+									{% if status %}
+										<option value="1" selected="selected">{{ option_enabled }}</option>
+										<option value="0">{{ option_disabled }}</option>
+									{% else %}
+										<option value="1">{{ option_enabled }}</option>
+										<option value="0" selected="selected">{{ option_disabled }}</option>
+									{% endif %}
+								</select>
+							</div>
+						</div>
+						<input type="hidden" name="module_cubit_salepoint_layout_id" value="{{ salepoint_layout_id }}"/>
+					</div>
+					<div class="tab-pane" id="tab-terms">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="input-terms-option">{{ entry_terms_option }}</label>
+							<div class="col-sm-10">
+								<select class="form-control" name="module_cubit_terms_option" class="form-control" id="input-terms-option">
+									<option value="disabled" {% if terms_option == 'disabled' or not terms_option %} selected {% endif %}>{{ option_disabled }}</option>
+									<option value="show" {% if terms_option == 'show' %} selected {% endif %}>{{ option_show }}</option>
+									<option value="required" {% if terms_option == 'required' %} selected {% endif %}>{{ option_require }}</option>
+								</select>
+							</div>
+						</div>
+						{% for language in languages %}
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input-terms-{{language.language_id}}">{{ entry_terms }}
+									{{  language.name }}</label>
+								<div class="col-sm-10">
+									<textarea class="form-control" name="module_cubit_terms[{{language.language_id}}]" class="form-control" placeholder="{{ entry_terms }}" id="input-terms-{{language.language_id}}">{{ terms[language.language_id] }}</textarea>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+					<div class="tab-pane" id="tab-offers" style="padding-top: 50px; position: relative;">
+						<button class="btn btn-primary btn-sm pull-right add-offer" type="button" style="position: absolute; top: 5px; right: 5px;">{{ text_add }}</button>
+						<div class="offers">
+							{% for offer_index, offer in offers %}
+							{% include 'extension/module/cubit_offer.twig' %}
+							{% endfor %}
+				</div>
+			</div>
+		</form>
+	</div>
+</div></div></div></div>
+<script>
+$(document).ready(function () {
+    if (localStorage) {
+        var active_tab_id = localStorage.getItem('active_tab');
+
+        if (active_tab_id) {
+            $('form ul.nav-tabs li#' + active_tab_id + ' a').click();
+        }
+    }
+
+    $(document).on('click', '.delete-offer', function (ev) {
+        ev.preventDefault();
+
+        if (confirm('{{ text_confirm }}')) {
+            var $offer = $(this).closest('.offer')
+            var cubit_offer_id = $offer.data('cubit-offer-id');
+
+            if (cubit_offer_id) {
+                $.ajax({
+                    url: 'index.php?route=extension/module/cubit/deleteOffer&user_token={{ user_token }}',
+                    method: 'POST',
+                    data: {
+                        cubit_offer_id: cubit_offer_id
+                    },
+                    success: function (response) {
+                        if (response.error) {
+                            alert(response.error);
+
+                        } else {
+                            $offer.remove();
+                        }
+                    }
+                })
+            } else {
+                $offer.remove();
+            }
+        }
+    });
+
+    $(document).on('click', '.add-offer', function (ev) {
+      	ev.preventDefault();
+
+		$.ajax({
+			url: 'index.php?route=extension/module/cubit/addOffer&user_token={{ user_token }}',
+			success: function(response) {
+				$('.offers').prepend(response);
+			},
+			error: function(error) {
+				alert(error);
+			}
+		})
+    });
+
+    $('form ul.nav-tabs li').click(function (ev) {
+        if (localStorage) {
+            localStorage.setItem('active_tab', $(this).attr('id'));
+        }
+    })
+})
+</script>
+<script>
+$('input[name="module_cubit_paypal_sandbox"]').on('change', function (ev) {
+    var $sandbox_webhook = $('div.webhook.sandbox-webhook');
+    var $live_webhook = $('div.webhook.live-webhook');
+
+    if ($(ev.target).prop('checked')) {
+        $sandbox_webhook.show();
+        $live_webhook.hide();
+    } else {
+        $sandbox_webhook.hide();
+        $live_webhook.show();
+    }
+});
+
+$('button.regenerate-webhook').on('click', function (ev) {
+    ev.preventDefault();
+
+    $(ev.target).find('i').addClass('fa-spin')
+    $(ev.target).attr('disabled', 'disabled');
+
+    var reference = $(ev.target).data('webhook-reference');
+
+    var $sandbox_input = $('input[name="module_cubit_paypal_sandbox"]');
+
+    var sandbox = '';
+
+    if ($sandbox_input.prop('checked')) {
+        sandbox = true;
+    } else {
+        sandbox = false;
+    }
+
+    var $client_id = $('input[name="module_cubit_paypal_client_id"]');
+    var $secret = $('input[name="module_cubit_paypal_secret"]');
+
+    if ($client_id.val() && $secret.val()) {
+        if (confirm('{{ text_confirm }}')) {
+            $.ajax({
+                url: 'index.php?route=extension/module/cubit/regenerateWebhook&user_token={{ user_token }}',
+                method: 'POST',
+                data: {
+                    env: sandbox ? 'sandbox' : 'live',
+                    client_id: $client_id.val(),
+                    secret: $secret.val(),
+                    reference: reference
+                },
+                success: function (response) {
+                    if (response.error) {
+                        alert(response.error)
+
+                        $(ev.target).find('i').removeClass('fa-spin')
+                        $(ev.target).removeAttr('disabled')
+
+                        return;
+                    } else if (!response.webhook_id) {
+                        alert('{{ error_request }}')
+
+                        $(ev.target).find('i').removeClass('fa-spin')
+                        $(ev.target).removeAttr('disabled')
+
+                        return;
+                    }
+
+                    var $container = $(ev.target).closest('.webhook');
+
+                    var $span = $container.find('span');
+                    var $input = $container.find('input[type="hidden"]');
+
+                    $span.text(response.webhook_id);
+
+                    $span.removeClass('label-danger');
+                    $span.addClass('label-success');
+
+                    $input.val(response.webhook_id);
+
+                    $(ev.target).remove();
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            })
+        } else {
+            $(ev.target).find('i').removeClass('fa-spin')
+            $(ev.target).removeAttr('disabled')
+        }
+    } else {
+        alert('{{ error_paypal_credentials }}')
+
+        $(ev.target).find('i').removeClass('fa-spin')
+        $(ev.target).removeAttr('disabled')
+    }
+});
+
+function navigateListing() {
+    window.location = 'index.php?route=extension/module/cubit/listing&user_token={{ user_token }}'
+}
+</script>
+{{ footer }}

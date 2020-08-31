@@ -1,0 +1,261 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<a href="{{ sync }}" class="btn btn-primary sync">
+					<i class="fa fa-refresh"></i>
+					{{ button_sync }}
+				</a>
+				<a href="{{ settings }}" class="btn btn-default">
+					<i class="fa fa-gear"></i>
+					{{ button_settings }}
+				</a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li>
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-list"></i>
+					{{ text_membership_subscriptions }}</h3>
+			</div>
+			<div class="panel-body">
+				{% if error_warning %}
+					<div class="alert alert-danger alert-dismissible">
+						<i class="fa fa-exclamation-circle"></i>
+						{{ error_warning }}
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				{% if success %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-exclamation-circle"></i>
+						{{ success }}
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div class="col-sm-9">
+					<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
+						<i class="fa fa-sort-numeric-up"></i>
+						<table class="table cubit-memberships">
+							<thead>
+								<tr>
+									<th>
+										<a href="{{ sort_customer_fullname }}">
+											{% if sort == 'customer_fullname' and sort_order == 'asc' %}
+												<i class="fa fa-arrow-up"></i>
+											{% elseif sort == 'customer_fullname' and sort_order == 'desc' %}
+												<i class="fa fa-arrow-down"></i>
+											{% endif %}
+											{{ column_customer }}</a>
+									</th>
+									<th>
+										<a href="{{ sort_offer_id }}">
+											{% if sort == 'offer_id' and sort_order == 'asc' %}
+												<i class="fa fa-arrow-up"></i>
+											{% elseif sort == 'offer_id' and sort_order == 'desc' %}
+												<i class="fa fa-arrow-down"></i>
+											{% endif %}
+											{{ column_offer }}</a>
+									</th>
+									<th>
+										<a href="{{ sort_date_added }}">
+											{% if sort == 'date_added' and sort_order == 'asc' %}
+												<i class="fa fa-arrow-up"></i>
+											{% elseif sort == 'date_added' and sort_order == 'desc' %}
+												<i class="fa fa-arrow-down"></i>
+											{% endif %}
+											{{ column_date_added }}</a>
+									</th>
+									<th>
+										<a href="{{ sort_date_ends }}">
+											{% if sort == 'date_ends' and sort_order == 'asc' %}
+												<i class="fa fa-arrow-up"></i>
+											{% elseif sort == 'date_ends' and sort_order == 'desc' %}
+												<i class="fa fa-arrow-down"></i>
+											{% endif %}
+											{{ column_date_ends }}</a>
+									</th>
+									<th>
+										<a href="{{ sort_status }}">
+											{% if sort == 'status' and sort_order == 'asc' %}
+												<i class="fa fa-arrow-up"></i>
+											{% elseif sort == 'status' and sort_order == 'desc' %}
+												<i class="fa fa-arrow-down"></i>
+											{% endif %}
+											{{ column_status }}</a>
+									</th>
+									<th>&nbsp;</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% if memberships %}
+									{% for membership in memberships %}
+										<tr data-cubit-membership>
+											{% if membership.customer %}
+												<td data-customer-id="{{ membership.customer.customer_id }}">
+													<a href="{{ membership.customer.link }}" target="_blank">{{ membership.customer.fullname}}</a>
+												</td>
+											{% else %}
+												<td>{{ text_missing }}</td>
+											{% endif %}
+											<td data-offer="{{ membership.offer }}" data-offer-id="{{ membership.offer_id }}">{{ membership.offer }}</td>
+											<td data-date-added="{{ membership.date_added }}">{{ membership.date_added }}</td>
+											<td data-date-ends="{{ membership.date_ends }}">{{ membership.date_ends }}</td>
+											<td data-status="{{ membership.status }}" data-paypal-subscription-status="{{ membership.subscription.status }}">
+												{% if membership.status %}
+													<span class="label label-success">{{ text_on }}</span>
+												{% else %}
+													<span class="label label-default">{{ text_off }}</span>
+												{% endif %}
+
+												{% if membership.subscription.status == 'APPROVAL_PENDING' %}
+													<span class="label label-warning">{{ text_paypal_subscription_status_approval_pending }}</span>
+												{% elseif membership.subscription.status == 'APPROVED' %}
+													<span class="label label-info">{{ text_paypal_subscription_status_approved }}</span>
+												{% elseif membership.subscription.status == 'ACTIVE' %}
+													<span class="label label-info">{{ text_paypal_subscription_status_active }}</span>
+												{% elseif membership.subscription.status == 'SUSPENDED' %}
+													<span class="label label-warning">{{ text_paypal_subscription_status_suspended }}</span>
+												{% elseif membership.subscription.status == 'CANCELLED' %}
+													<span class="label label-danger">{{ text_paypal_subscription_status_cancelled }}</span>
+												{% elseif membership.subscription.status == 'EXPIRED' %}
+													<span class="label label-warning">{{ text_paypal_subscription_status_expired }}</span>
+												{% endif %}
+											</td>
+											<td data-action>
+												<a href="{{ membership.view }}" class="btn btn-xs btn-info info-membership">{{ button_details }}</a>
+											</td>
+										</tr>
+									{% endfor %}
+								{% else %}
+									<tr>
+										<td colspan="11">{{ text_no_results }}</td>
+									</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</form>
+					{{ pagination }}
+				</div>
+				<div class="col-sm-3">
+					<h4>{{ text_filter }}</h4>
+					<form action="index.php" method="GET">
+						<div class="form-group">
+							<label class="control-label">{{ entry_store }}</label>
+							<select name="filter_store_id" class="form-control">
+								<option value="-1">{{ option_all }}</option>
+								{% for store in stores %}
+									{% if filter_store_id == store.store_id %}
+										<option value="{{ store.store_id }}" selected>{{ store.name }}</option>
+									{% else %}
+										<option value="{{ store.store_id }}">{{ store.name }}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="control-label">{{ entry_customer }}</label>
+							<input type="text" name="filter_customer_fullname" value="{{ filter_customer_fullname }}" placeholder="{{ entry_customer }}" class="form-control"/>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label">{{ entry_offer }}</label>
+							<select name="filter_cubit_offer_id" class="form-control">
+								<option value="-1">{{ option_all }}</option>
+								{% for offer in cubit_offers %}
+									{% if filter_cubit_offer_id and filter_cubit_offer_id == offer.cubit_offer_id %}
+										<option value="{{ offer.cubit_offer_id }}" selected>{{ offer.name }}</option>
+									{% else %}
+										<option value="{{ offer.cubit_offer_id }}">{{ offer.name }}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label">{{ entry_paypal_subscription_id }}</label>
+							<input type="text" name="filter_paypal_subscription_id" value="{{ filter_paypal_subscription_id }}" placeholder="{{ entry_paypal_subscription_id }}" class="form-control"/>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label">{{ entry_paypal_subscription_status }}</label>
+							<select name="filter_paypal_subscription_status" class="form-control">
+								<option value="">{{ option_all }}</option>
+								<option value="APPROVAL_PENDING" {% if filter_paypal_subscription_status == 'APPROVAL_PENDING' %}selected{% endif %}>{{ text_paypal_subscription_status_approval_pending }}</option>
+								<option value="APPROVED" {% if filter_paypal_subscription_status == 'APPROVED' %}selected{% endif %}>{{ text_paypal_subscription_status_approved }}</option>
+								<option value="ACTIVE" {% if filter_paypal_subscription_status == 'ACTIVE' %}selected{% endif %}>{{ text_paypal_subscription_status_active }}</option>
+								<option value="SUSPENDED" {% if filter_paypal_subscription_status == 'SUSPENDED' %}selected{% endif %}>{{ text_paypal_subscription_status_suspended }}</option>
+								<option value="CANCELLED" {% if filter_paypal_subscription_status == 'CANCELLED' %}selected{% endif %}>{{ text_paypal_subscription_status_cancelled }}</option>
+								<option value="EXPIRED" {% if filter_paypal_subscription_status == 'EXPIRED' %}selected{% endif %}>{{ text_paypal_subscription_status_expired }}</option>		
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label">{{ entry_status }}</label>
+							<select name="filter_status" class="form-control">
+								{% if filter_status == 0 %}
+								<option value="1" >{{ text_on }}</option>
+								<option value="0" selected>{{ text_off }}</option>
+								<option value="">{{ option_all }}</option>
+								{% elseif filter_status == 1 %}
+								<option value="1" selected>{{ text_on }}</option>
+								<option value="0" >{{ text_off }}</option>
+								<option value="">{{ option_all }}</option>
+								{% else %}
+								<option value="1">{{ text_on }}</option>
+								<option value="0">{{ text_off }}</option>
+								<option value="-1" selected>{{ option_all }}</option>
+								{% endif %}
+							</select>
+						</div>
+
+						<input type="hidden" name="route" value="extension/module/cubit/listing"/>
+						<input type="hidden" name="sort" value="{{ sort }}"/>
+						<input type="hidden" name="sort_order" value="{{ sort_order }}"/>
+						<input type="hidden" name="user_token" value="{{ user_token }}"/>
+						<button class="btn btn-md btn-primary">{{ button_filter }}</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div></div>
+<script>
+$('a.sync').on('click', function (ev) {
+	ev.preventDefault();
+	
+	const copy_html = $(ev.currentTarget).html();
+
+	$(ev.target).html('<i class="fa fa-refresh fa-spin"></i>');
+
+	$(ev.target).attr('disabled', 'disabled');
+
+    $.ajax({
+		url: '{{ sync }}',
+		method: 'GET',
+        success: function (response) {
+			alert('{{ text_sync_reload }}');
+
+			window.location.replace(window.location + '');
+		},
+		error: function (err) {
+			alert(err);
+	
+			$(ev.target).html(copy_html);
+			$(ev.target).removeAttr('disabled');		
+		}
+    })
+});
+</script>
+{{ footer }}

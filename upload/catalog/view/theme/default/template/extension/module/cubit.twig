@@ -1,0 +1,88 @@
+{% if offers %} 
+{% if error_warning %}
+	<div class="alert alert-danger">{{ error_membership_form }}</div>
+{% endif %}
+<form method="POST" action="{{ action }}" id="cubit-membership" class="cubit-membership">
+
+        <div class="form-group cubit-membership-offer">
+            <label class="conrol-label" for="cubit-membership-offer">{{ entry_membership_offer }}</label>
+            <select name="membership_offer" class="form-control" id="cubit-membership-offer">
+                <option value="-1">{{ text_none }}</option>
+                {% for membership_offer in offers %}
+                    <option value="{{ membership_offer.cubit_offer_id }}" data-billing-plan="{{ membership_offer.billing_plan }}" {% if membership_offer.cubit_offer_id == cubit_offer_id %} selected {% endif %}>{{ membership_offer.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group cubit-membership-billing-plan" style="display:none;">
+            <label class="control-label" for="cubit-membership-billing-plan">{{ column_billing_plan }}</label>
+            <input type="text" class="form-control" readonly="readonly" value="" id="cubit-membership-billing-plan">
+        </div>
+
+	    {% if terms %}
+		<div class="form-group cubit-membership-terms">
+            <h5>{{ text_membership_terms }}</h5>
+            {% if terms_option == 'required' %}
+                <label>
+                    <input type="checkbox" name="agree" value="1" id="cubit-membership-agree"/> {{ terms }}
+                </label>
+            {% else %}
+                <p>{{ terms }}</p>
+                <input type="hidden" name="agree" value="1" id="cubit-membership-agree"/>
+            {% endif %}
+        </div>
+		{% else %}
+			<input type="hidden" name="agree" value="1" id="cubit-membership-agree"//>
+		{% endif %}
+		<div>
+			<button class="btn btn-lg btn-primary cubit-membership-confirm  pull-right" type="submit">{{ button_confirm }}</button>
+		</div>
+	</form>
+<script>
+    $(document).ready(function () {
+        var $membership_offer = $('select[name="membership_offer"]');
+
+        $membership_offer.on('change', function (ev) {
+            var $billing_plan = $('div.cubit-membership-billing-plan');
+
+            if (ev.target.value > -1) {
+                $billing_plan.show();
+                $billing_plan.find('input').val($(ev.target).find('option:selected').data('billing-plan'))
+            } else {
+                $billing_plan.hide();
+            }
+        });
+
+        var $membership_order_form = $('form#cubit-membership');
+
+        var pass_validation = false;
+
+        $membership_order_form.on('submit', function (ev) {
+            if (! pass_validation) {
+                ev.preventDefault()
+            } else {
+                return true;
+            }
+
+            if ($membership_offer.val() > -1) {
+                var $membership_agree = $('input[name="agree"]');
+
+                if ($membership_agree.attr('type') == 'checkbox' && $membership_agree.prop('checked') == false) {
+                alert('{{ error_membership_terms }}');
+
+                return;
+            }
+            } else {
+                alert('{{ error_membership_offer }}');
+
+                return;
+            }
+            
+            pass_validation = true;
+            $membership_order_form.submit();
+        })
+    });
+</script>
+{% else %}
+	<p>{{ error_no_membership_offer }}</p>
+{% endif %}

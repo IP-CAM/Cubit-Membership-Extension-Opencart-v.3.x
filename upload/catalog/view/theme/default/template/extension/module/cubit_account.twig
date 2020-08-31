@@ -1,0 +1,126 @@
+{{ header }}
+<div class="container">
+	<ul class="breadcrumb">
+		{% for breadcrumb in breadcrumbs %}
+			<li>
+				<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+	<div class="row">{{ column_left }}
+		{% if column_left and column_right %}
+			{% set class = 'col-sm-6' %}
+		{% elseif column_left or column_right %}
+			{% set class = 'col-sm-9' %}
+		{% else %}
+			{% set class = 'col-sm-12' %}
+		{% endif %}
+		<div id="content" class="{{ class }}">{{ content_top }}
+			<h1>{{ heading_title }}</h1>
+			{% if success %}
+				<div class="alert alert-success alert-dismissible">
+					<i class="fa fa-check-circle"></i>
+					{{ success }}</div>
+			{% endif %}
+			{% if error_warning %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning }}</div>
+			{% endif %}
+			{% if membership %}
+				<div class="table-responsive">
+					<table class="table membership-info">
+						<tr data-offer="{{ membership.offer }}">
+							<th>{{ column_membership_offer }}</th>
+							<td>
+								<em>{{ membership.offer }}</em>
+							</td>
+						</tr>
+						<tr data-billing-plan="{{ membership.billing_plan }}">
+							<th>{{ column_billing_plan }}</th>
+							<td>
+								<em>{{ membership.billing_plan }}</em>
+							</td>
+						</tr>
+												<tr data-date-starts="{{ membership.date_added }}">
+							<th>{{ column_date_added }}</th>
+							<td>
+								<em>{{ membership.date_added }}</em>
+							</td>
+						</tr>
+
+						<tr data-date-ends="{{ membership.date_ends }}">
+							<th>{{ column_date_ends }}</th>
+							<td>
+								<em>{{ membership.date_ends }}</em>
+							</td>
+						</tr>
+
+						<tr data-status="{{ membership.status }}">
+							<th>{{ column_membership_status }}</th>
+							<td>
+								{% if membership.status %}
+									<span class="label label-success">{{ text_on }}</span>
+								{% else %}
+									<span class="label label-default">{{ text_off }}</span>
+								{% endif %}
+							</td>
+						</tr>
+
+						<tr data-paypal-subscription-status="{{ membership.subscription.status }}">
+							<th>{{ column_paypal_subscription_status }}</th>
+							<td>
+								{% if membership.subscription.status == 'ACTIVE' %}
+									<span class="label label-info">{{ text_paypal_subscription_active }}</span>
+								{% elseif membership.subscription.status == 'SUSPENDED' %}
+									<span class="label label-warning">{{ text_paypal_subscription_suspended }}</span>
+								{% elseif membership.subscription.status == 'CANCELLED' %}
+									<span class="label label-danger">{{ text_paypal_subscription_cancelled }}</span>
+								{% elseif membership.subscription.status == 'APPROVAL_PENDING' %}
+									<span class="label label-warning">{{ text_pending }}</span>
+								{% elseif membership.subscription.status == 'APPROVED' %}
+									<span class="label label-success">{{ text_paypal_subscription_approved }}</span>
+								{% elseif membership.subscription.status == 'CREATED' %}
+									<span class="label label-default">{{ text_paypal_subscription_created }}</span>
+								{% elseif membership.subscription.status == 'EXPIRED' %}
+									<span class="label label-danger">{{ text_paypal_subscription_expired }}</span>
+								{% endif %}
+
+
+						{% if membership.subscription.status == 'ACTIVE' %}
+			
+									<a href="{{ membership.subscription.cancel }}" class="btn btn-xs btn-link cancel-membership" style="color: red;">{{ button_cancel }}</a>
+				
+						{% endif %}
+							</td>
+						</tr>
+
+					</table>
+				</div>
+				<p>
+					{% if not membership.status and membership.date_expires != '0000-00-00 00:00:00'  %}
+						{{ text_no_membership }}
+					{% endif %}
+				</p>
+			{% else %}
+				{{ text_no_membership }}
+			{% endif %}
+			{{ content_bottom }}</div>
+		{{ column_right }}</div>
+</div>
+<script>
+	$('.cancel-membership').on('click', function (ev) {
+      ev.preventDefault();
+
+      if (confirm('{{ text_confirm }}')) {
+        window.location.replace($(ev.target).attr('href'))
+      }
+    });
+
+	$(document).ready(function() {
+		setInterval(function() {
+			window.location.replace(window.location + '');
+		}, 10000);
+	});
+</script>
+{{ footer }}

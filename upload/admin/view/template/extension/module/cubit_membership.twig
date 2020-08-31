@@ -1,0 +1,422 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<a href="{{ return }}" data-toggle="tooltip" title="{{ button_return }}" class="btn btn-default">
+					<i class="fa fa-reply"></i>
+				</a>
+			</div>
+			<h1>{{ text_memberships }}
+			</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li>
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+		{% if error_warning %}
+			<div class="alert alert-danger alert-dismissible">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		{% if success %}
+			<div class="alert alert-success alert-dismissible">
+				<i class="fa fa-check-circle"></i>
+				{{ success }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-info"></i> {{ text_membership_details }}
+				</h3>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table class="table">
+						<tbody>
+							<tr data-customer data-customer-id="{{ customer.customer_id }}">
+								<th>{{ column_customer }}</th>
+								<td>
+									<a href="{{ customer.link }}">{{ customer.fullname }}</a>
+								</td>
+							</tr>
+							<tr data-offer="{{ offer }}">
+								<th>{{ column_offer }}</th>
+								<td>
+									{{ offer }}
+								</td>
+							</tr>
+							<tr data-billing-plan="{{ billing_plan }}">
+								<th>{{ column_billing_plan }}</th>
+								<td>
+									{{ billing_plan }}
+								</td>
+							</tr>
+														<tr data-date-added="{{ date_added }}">
+								<th>{{ column_date_added }}</th>
+								<td>
+									{{ date_added }}
+								</td>
+							</tr>
+
+														<tr data-date-renewed="{{ date_renewed }}">
+								<th>{{ column_date_renewed }}</th>
+								<td>
+
+																	{% if date_renewed != '0000-00-00 00:00:00' %}
+									{{ date_renewed }}
+									
+									{% else %}
+									-
+									{% endif %}
+								</td>
+							</tr>
+
+														<tr data-date-ends="{{ date_ends }}">
+								<th>
+									{% if date_ends != '0000-00-00 00:00:00' %}
+										<label class="control-label" for="membership-end-date">
+								<span data-toggle="tooltip" title="{{ help_date_ends_change}}">{{ column_date_ends }} </span>
+
+								</label>
+								{% else %}
+{{ column_date_ends }}
+								{% endif %}
+								</th>
+								<td>
+								{% if date_ends != '0000-00-00 00:00:00' %}
+									<input type="text" name="membership_date_ends" id="membership-end-date" value="{{ date_ends }}" placeholder="{{ text_date_ends }}" data-date-format="YYYY-MM-DD HH:mm" class="form-control">
+									
+									{% else %}
+									-
+									{% endif %}
+								</td>
+							</tr>
+							<tr data-status="{{ status }}">
+								<th>{{ column_status }}</th>
+								<td>
+									{% if status %}
+										<span class="label label-success">{{ text_on }}</span>
+									{% else %}
+										<span class="label label-default">{{ text_off }}</span>
+									{% endif %}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-money"></i> {{ text_paypal_details }}
+				</h3>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table class="table">
+						<tbody>
+							<tr data-paypal-subscription-id="{{ subscription.id }}">
+								<th>{{ column_paypal_subscription_id }}</th>
+								<td>{{ subscription.id }}</td>
+							</tr>
+							<tr data-paypal-subscription-create-time="{{ subscription.create_time }}">
+								<th>{{ column_create_time }}</th>
+								<td>{{ subscription.create_time }}</td>
+							</tr>
+							<tr data-subscription-update-time="{{ subscription.update_time }}">
+								<th>{{ column_update_time }}</th>
+								<td>{{ subscription.update_time }}</td>
+							</tr>
+							<tr data-paypal-subscription-status="{{ subscription.status }}">
+								<th>{{ column_status }}</th>
+								<td>
+									{% if subscription.status == 'ACTIVE' %}
+										<span class="label label-info">{{ text_paypal_subscription_status_active }}</span>
+									{% elseif subscription.status == 'SUSPENDED' %}
+										<span class="label label-warning">{{ text_paypal_subscription_status_suspended }}</span>
+									{% elseif subscription.status == 'CANCELLED' %}
+										<span class="label label-danger">{{ text_paypal_subscription_status_cancelled }}</span>
+									{% elseif subscription.status == 'APPROVAL_PENDING' %}
+										<span class="label label-warning">{{ text_paypal_subscription_status_approval_pending }}</span>
+									{% elseif subscription.status == 'APPROVED' %}
+										<span class="label label-success">{{ text_paypal_subscription_status_aproved }}</span>
+									{% elseif subscription.status == 'CREATED' %}
+										<span class="label label-default">{{ text_paypal_subscription_status_created }}</span>
+									{% elseif subscription.status == 'EXPIRED' %}
+										<span class="label label-danger">{{ text_paypal_subscription_status_expired}}</span>
+									{% endif %}
+								</td>
+							</tr>
+							{% if subscription.approve %}
+								<tr>
+									<th>&nbsp;</th>
+									<td>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="fa fa-link"></i>
+											</span>
+											<input type="text" readonly="" value="{{ subscription.approve }}" class="form-control">
+										</div>
+									</td>
+								</tr>
+							{% endif %}
+							{% if subscription.cancel %}
+								<tr>
+									<th>&nbsp;</th>
+									<td>
+										<button class="btn btn-danger btn-xs cancel-subscription" data-paypal-subscription-id="{{ subscription.id }}">{{ button_cancel }}</button>
+									</td>
+								</tr>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-list"></i> {{ text_transactions }}
+				</h3>
+			</div>
+			<div class="panel-body">
+				{% if transactions %}
+				<div class="table-responsive">
+					<table class="table paypal-transactions" id="transactions">
+						<thead>
+							<tr>
+								<th>{{ column_id }}</th>
+								<th>
+									{% if sort == 'amount' and sort_order == 'asc' %}
+									<a href="{{ sort_amount }}">{{ column_amount }} <i class="fa fa-arrow-up"></i></a>
+									{% elseif  sort == 'amount' and sort_order == 'desc' %}
+									<a href="{{ sort_amount }}">{{ column_amount }} <i class="fa fa-arrow-down"></i></a>
+									{% else %}
+									<a href="{{ sort_amount }}">{{ column_amount }}</a>
+									{% endif %}
+								</th>
+								<th>
+									{% if sort == 'create_time' and sort_order == 'asc' %}
+									<a href="{{ sort_create_time }}">{{ column_create_time }} <i class="fa fa-arrow-up"></i></a>
+									{% elseif  sort == 'create_time' and sort_order == 'desc' %}
+									<a href="{{ sort_create_time }}">{{ column_create_time }} <i class="fa fa-arrow-down"></i></a>
+									{% else %}
+									<a href="{{ sort_create_time }}">{{ column_create_time }}</a>
+									{% endif %}
+								</th>
+								<th>
+
+															{% if sort == 'update_time' and sort_order == 'asc' %}
+									<a href="{{ sort_update_time }}">{{ column_update_time }} <i class="fa fa-arrow-up"></i></a>
+									{% elseif  sort == 'update_time' and sort_order == 'desc' %}
+									<a href="{{ sort_update_time }}">{{ column_update_time }} <i class="fa fa-arrow-down"></i></a>
+									{% else %}
+									<a href="{{ sort_update_time }}">{{ column_update_time }}</a>
+									{% endif %}</th>
+								<th>
+
+
+														{% if sort == 'state' and sort_order == 'asc' %}
+									<a href="{{ sort_state }}">{{ column_state }} <i class="fa fa-arrow-up"></i></a>
+									{% elseif  sort == 'state' and sort_order == 'desc' %}
+									<a href="{{ sort_state }}">{{ column_state }} <i class="fa fa-arrow-down"></i></a>
+									{% else %}
+									<a href="{{ sort_state }}">{{ column_state }}</a>
+									{% endif %}</th>
+								<th>
+
+
+														{% if sort == 'resource_type' and sort_order == 'asc' %}
+									<a href="{{ sort_resource_type }}">{{ column_resource_type }} <i class="fa fa-arrow-up"></i></a>
+									{% elseif  sort == 'resource_type' and sort_order == 'desc' %}
+									<a href="{{ sort_resource_type }}">{{ column_resource_type }} <i class="fa fa-arrow-down"></i></a>
+									{% else %}
+									<a href="{{ sort_resource_type }}">{{ column_resource_type }}</a>
+									{% endif %}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for transaction in transactions %}
+							<tr>
+								<td data-paypal-transaction-id="{{ transaction.id }}">{{ transaction.id }}</td>
+								<td data-paypal-transaction-amount="{{ transaction.amount }}" data-paypal-transaction-currency="{{ transaction.currency }}">{{ transaction.amount }} {{ transaction.currency }}</td>
+								<td data-paypal-transaction-create-time="{{ transaction.create_time }}">{{ transaction.create_time }}</td>
+								<td data-paypal-transaction-update-time="{{ transaction.update_time }}">{{ transaction.update_time }}</td>
+								<td data-paypal-transaction-state="{{ transaction.state }}">
+									{% if transaction.state == 'pending' %}
+										<span class="label label-warning">{{ transaction.state }}</span>
+									{% elseif transaction.state == 'completed' %}
+										<span class="label label-success">{{ transaction.state }}</span>
+									{% else %}
+										<span class="label label-default">{{ transaction.state }}</span>
+									{% endif %}
+								</td>
+								<td data-paypal-transaction-resource-type="{{ transaction.resource_type }}">
+									{% if transaction.resource_type == 'sale' %}
+									{{ text_sale }}
+									{% elseif transaction.resource_type == 'refund' %}
+									{{ text_refund }}
+									{% endif %}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+
+					{{ transaction_pagination }}
+				</div>
+				{% else %}
+				<p>{{ text_no_results }}</p>
+				{% endif %}
+			</div>
+
+		</div>
+
+		<p>
+			<button class="btn btn-danger btn-md delete-membership" {% if subscription.cancel %}disabled="disabled"{% endif %} }>{{ button_delete_membership}}</button>
+	</p>
+	</div>
+</div>
+<script>
+function updateMembership(cubit_membership_id, data, cb) {
+	$.ajax({
+		url: 'index.php?route=extension/module/cubit/updateMembership&user_token={{user_token}}',
+		method: 'POST',
+		data: Object.assign({}, data, { cubit_membership_id: cubit_membership_id }),
+		complete: function() {
+			cb()
+		},
+		success: function(response) {
+			if (response.error) {
+				alert(response.error);
+				return;
+			}
+
+			alert('{{ text_membership_updated }}');
+		},
+		error: function(error) {
+			alert(error)
+		}
+	})
+}
+
+$('document').ready(function() {
+	console.log('document ready');
+	
+	var $membership_date_ends = $('input[name="membership_date_ends"]');
+
+	$membership_date_ends.datetimepicker();
+
+	$membership_date_ends.on('dp.change', function(ev) {
+		const format = 'YYYY-MM-DD HH:mm:00';
+
+		const date = ev.date.format(format)
+		const date_old = ev.oldDate.format(format)
+
+		if (date != date_old) {
+			updateMembership('{{ cubit_membership_id }}', { date_ends: date }, function() {
+				$membership_date_ends.blur()
+			})
+		}
+	})
+});
+
+$('button.delete-membership').on('click', function(ev) {
+	ev.preventDefault();
+
+	if (!confirm("{{ text_confirm_delete }}")) {
+		return;
+	}
+	$.ajax({
+		url: "index.php?route=extension/module/cubit/deleteMembership&user_token={{ user_token }}",
+		method: "POST",
+		data: {
+			cubit_membership_id:  "{{ cubit_membership_id}}"
+		},
+		success: function(response) {
+			if (response.error) {
+				alert(response.error);
+				return;
+			}
+
+			window.location.replace(response.redirect.replace('&amp;', '&'));
+		},
+		error: function(error) {
+			alert(error);
+		}
+	})
+});
+</script>
+{% if subscription.cancel %}
+<script>
+$('.cancel-subscription').on('click', function (ev) {
+    ev.preventDefault();
+
+    var button_html = $(ev.target).html();
+
+    $(ev.target).attr('disabled', 'disabled');
+    $(ev.target).html('<i class="fa fa-spinner fa-spin"></i>');
+
+    var reason = prompt('{{ text_prompt_reason }}')
+
+    if (reason) {
+        var $form = $('<form>');
+
+        $.ajax({
+            url: '{{ subscription.cancel }}'.replace('&amp;', '&'),
+            method: 'POST',
+            data: {
+                reason: reason,
+                paypal_subscription_id: $(ev.target).data('paypal-subscription-id')
+            },
+            success: function (response) {
+                if (response.error) {
+                    alert(response.error);
+
+                    $(ev.target).removeAttr('disabled')
+                    $(ev.target).html(button_html);
+
+                    return;
+                } else if (!response.success) {
+                    alert('{{ error_request }}');
+
+                    $(ev.target).removeAttr('disabled')
+                    $(ev.target).html(button_html);
+
+					return;
+                }
+				
+                window.location.replace('' + window.location);
+
+                return;
+            },
+            error: function (err) {
+                alert(err);
+                $(ev.target).removeAttr('disabled')
+                $(ev.target).html(button_html);
+            }
+        })
+    } else {
+        $(ev.target).removeAttr('disabled')
+        $(ev.target).html(button_html);
+    }
+});
+
+</script>
+{% endif %}
+{{ footer }}
